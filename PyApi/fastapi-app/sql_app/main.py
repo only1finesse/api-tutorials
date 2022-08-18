@@ -1,10 +1,15 @@
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy.orm import Session
+from fastapi.security import HTTPBearer
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
+from .helper import VerifyToken
+
+# Scheme for the Authorization header
+token_auth_scheme = HTTPBearer()
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -19,6 +24,22 @@ def get_db():
     finally:
         db.close()
 
+
+# async def get_current_user(response: Response, token: str = Depends(token_auth_scheme), db: Session = Depends(get_db)): 
+#     """A valid access token is required to access this route"""
+#     try: 
+#         result = VerifyToken(token.credentials).verify()  # 👈 updated code
+@app.get("/api/private")
+def private(response: Response, token: str = Depends(token_auth_scheme)): 
+    """A valid access token is required to access this route"""
+ 
+    result = VerifyToken(token.credentials).verify()  
+
+    if result.get("status"):
+       response.status_code = status.HTTP_400_BAD_REQUEST
+       return result
+ 
+    return result
 
 @app.post('/users/', response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):

@@ -25,6 +25,10 @@ def create_user(db: Session, user: schemas.UserCreate):
 
     return db_user
 
+def check_email_password(db: Session, user: schemas.UserAuthenticate):
+    db_user_info: models.User = get_users(db, username=user.email)
+    return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))
+
 
 def get_home_works(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.HomeWork).offset(skip).limit(limit).all()

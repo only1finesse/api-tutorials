@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 sqlalchemy = "==1.4.23"
 bcrypt = "*"
+pyjwt = "*"
 
 [dev-packages]
 

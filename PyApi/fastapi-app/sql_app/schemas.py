@@ -24,7 +24,9 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-
+    
+class UserAuthenticate(UserBase):
+    password: str
 
 class User(UserBase):
     id: int
@@ -33,3 +35,11 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+        
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str = None
